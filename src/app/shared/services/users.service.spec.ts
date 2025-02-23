@@ -6,7 +6,7 @@ import { UtilsService } from './utils.service';
 describe('UsersService', () => {
   let service: UsersService;
   // WITH SPY
-  let utilsService: UtilsService;
+  // let utilsService: UtilsService;
 
   // WITH MOCK
   // const utilsServiceMock = {
@@ -18,13 +18,13 @@ describe('UsersService', () => {
       providers: [
         UsersService,
         // WITH SPY
-        UtilsService,
+        // UtilsService,
         // WITH MOCK
         // { provide: UtilsService, useValue: utilsServiceMock },
       ],
     });
     service = TestBed.inject(UsersService);
-    utilsService = TestBed.inject(UtilsService);
+    // utilsService = TestBed.inject(UtilsService);
   });
 
   it('should be created', () => {
@@ -35,28 +35,36 @@ describe('UsersService', () => {
     it('should add a user', () => {
       const user: UserInterface = { id: '3', name: 'Alice' };
       service.addUser(user);
-      expect(service.users).toEqual([user]);
+      expect(service.users$.getValue()).toEqual([user]);
+
+      // const user: UserInterface = { id: '3', name: 'Alice' };
+      // service.addUser(user);
+      // expect(service.users).toEqual([user]);
     });
   });
 
   describe('removeUser', () => {
     it('should remove a user', () => {
-      const user: UserInterface = { id: '3', name: 'Alice' };
-      service.addUser(user);
-      service.removeUser(user.id);
-      expect(service.users).toEqual([]);
+      service.users$.next([{ id: '3', name: 'Alice' }]);
+      service.removeUser('3');
+      expect(service.users$.getValue()).toEqual([]);
+      
+      // const user: UserInterface = { id: '3', name: 'Alice' };
+      // service.addUser(user);
+      // service.removeUser(user.id);
+      // expect(service.users).toEqual([]);
     });
   });
 
   describe('getUsernames', () => {
     it('should get usernames', () => {
+      // NEEDS inject and getUsernames in the ts file
       // WITH SPY
-      jest.spyOn(utilsService, 'pluck');
-      const user: UserInterface = { id: '3', name: 'Alice' };
-      service.addUser(user);
-      service.getUsernames();
-      expect(utilsService.pluck).toHaveBeenCalledWith(service.users, 'name');
-
+      // jest.spyOn(utilsService, 'pluck');
+      // const user: UserInterface = { id: '3', name: 'Alice' };
+      // service.addUser(user);
+      // service.getUsernames();
+      // expect(utilsService.pluck).toHaveBeenCalledWith(service.users, 'name');
       // WITH MOCK
       // utilsServiceMock.pluck.mockReturnValue(['foo'])
       // expect(service.getUsernames()).toEqual(['foo']);
