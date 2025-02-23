@@ -4,7 +4,7 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { ApiService, TagInterface } from './api.service';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 
 describe('ApiService', () => {
   let service: ApiService;
@@ -57,6 +57,25 @@ describe('ApiService', () => {
 
       expect(req.request.method).toEqual('POST');
       expect(req.request.body).toEqual({ name: 'foo' });
+    });
+
+    it('throws an error if the request fails', () => {
+      let actualError: HttpErrorResponse | undefined;
+      service.createTag('foo').subscribe({
+        next: () => {
+          fail('Success should not be called');
+        },
+        error: (error) => {
+          actualError = error;
+        },
+      });
+      const req = httpTestingController.expectOne('http://localhost:3004/tags');
+      req.flush('Server error', {
+        status: 500,
+        statusText: 'Internal Server Error',
+      });
+      expect(actualError?.status).toEqual(500);
+      expect(actualError?.statusText).toEqual('Internal Server Error');
     });
   });
 });
